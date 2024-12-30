@@ -10,71 +10,71 @@ import UIKit
 class BreedInfoTableViewController: UITableViewController {
     
     var dogBreeds = [DogBreed]()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let nib = UINib(nibName: "DogBreedTableViewCell", bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: "DogBreedCell")
         
-        fetchDogBreeds()
-    }
-    
-    func fetchDogBreeds() {
-        guard let url = URL(string: "https://private-e41e00-dogbreed.apiary-mock.com/dogs/dog_list") else { return }
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            
+            tableView.rowHeight = 100
+            
+            // Obtener las razas de perros
+            fetchDogBreeds()
+        }
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                print("Error al obtener los datos: \(error?.localizedDescription ?? "Desconocido")")
+        func fetchDogBreeds() {
+            guard let url = URL(string: "https://private-e41e00-dogbreed.apiary-mock.com/dogs/dog_list") else {
+                print("URL no válida")
                 return
             }
             
-            do {
-                let decoder = JSONDecoder()
-                let dogList = try decoder.decode([DogBreed].self, from: data)
-                
-                DispatchQueue.main.async {
-                    self.dogBreeds = dogList
-                    self.tableView.reloadData()
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                guard let data = data, error == nil else {
+                    print("Error al obtener los datos: \(error?.localizedDescription ?? "Desconocido")")
+                    return
                 }
-            } catch {
-                print("Error al decodificar los datos: \(error.localizedDescription)")
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let dogList = try decoder.decode([DogBreed].self, from: data)
+                    
+                    DispatchQueue.main.async {
+                        self.dogBreeds = dogList
+                        self.tableView.reloadData() // Recargar la tabla después de obtener los datos
+                    }
+                } catch {
+                    print("Error al decodificar los datos: \(error.localizedDescription)")
+                }
             }
+            
+            task.resume()
         }
         
-        task.resume()
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dogBreeds.count
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
+        override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return dogBreeds.count
+        }
+        
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DogBreedCell", for: indexPath) as! DogBreedTableViewCell
         let breed = dogBreeds[indexPath.row]
         cell.configureCell(with: breed)
         return cell
     }
-
-    // MARK: - Navegar al detalle de la raza
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Obtén el objeto de la raza seleccionada
+        // Obtén la raza seleccionada
         let selectedBreed = dogBreeds[indexPath.row]
         
-        // Realiza el segue hacia el detalle
+        // Realiza el segue
         performSegue(withIdentifier: "showBreedDetails", sender: selectedBreed)
     }
 
-    // MARK: - Preparar para el segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showBreedDetails" {
-            if let breedDetailVC = segue.destination as? BreedDetailViewController,
-               let selectedBreed = sender as? DogBreed {
-                breedDetailVC.breedId = selectedBreed.id // Envía el ID de la raza
-            }
+        if segue.identifier == "showBreedDetails",
+           let breedDetailVC = segue.destination as? BreedDetailViewController,
+           let selectedBreed = sender as? DogBreed {
+            // Pasa el ID de la raza seleccionada al ViewController de detalles
+            breedDetailVC.breedId = selectedBreed.id
         }
     }
+
+
 }
