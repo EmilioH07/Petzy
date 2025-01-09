@@ -10,13 +10,21 @@ import UIKit
 class AdoptionTableViewController: UITableViewController {
 
     var dogsForAdoption = [AdoptionAPI]()
+    var favoriteDogIds = Set<String>()  // Usar un Set para almacenar los IDs de los perros favoritos
+    var favoriteDogs: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Configura la altura dinámica de las celdas
-        tableView.rowHeight = 120
-        
+        tableView.rowHeight = 280
+
+        // Cargar favoritos desde UserDefaults
+        loadFavorites()
+
+        // Observar notificaciones para cambios en favoritos
+        NotificationCenter.default.addObserver(self, selector: #selector(toggleFavorite(_:)), name: NSNotification.Name("ToggleFavorite"), object: nil)
+
         fetchDogsForAdoption()
     }
     
@@ -47,7 +55,29 @@ class AdoptionTableViewController: UITableViewController {
         
         task.resume()
     }
+    
+    // Cargar favoritos desde UserDefaults
+    func loadFavorites() {
+        if let savedFavorites = UserDefaults.standard.array(forKey: "FavoriteDogs") as? [String] {
+            favoriteDogIds = Set(savedFavorites)
+        }
+    }
 
+    func saveFavorites() {
+            UserDefaults.standard.set(Array(favoriteDogIds), forKey: "FavoriteDogs")
+        }
+
+    @objc func toggleFavorite(_ notification: Notification) {
+        if let userInfo = notification.userInfo, let dogId = userInfo["id"] as? String {
+            if favoriteDogIds.contains(dogId) {
+                favoriteDogIds.remove(dogId)
+            } else {
+                favoriteDogIds.insert(dogId)
+            }
+            saveFavorites()
+            tableView.reloadData()
+        }
+    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dogsForAdoption.count
@@ -56,30 +86,37 @@ class AdoptionTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AdoptionCell", for: indexPath) as! AdoptionTableViewCell
         let dog = dogsForAdoption[indexPath.row]
-        cell.configureCell(with: dog)
+        
+        // Verificar si el perro es favorito
+        let isFavorite = favoriteDogIds.contains(dog.id)
+        
+        cell.configureCell(with: dog, isFavorite: isFavorite)
+        
+        // Configurar la acción del botón de favorito
+        cell.favoriteAction = {
+            if isFavorite {
+                // Si ya es favorito, eliminarlo
+                self.favoriteDogIds.remove(dog.id)
+            } else {
+                // Si no es favorito, agregarlo
+                self.favoriteDogIds.insert(dog.id)
+            }
+            
+            // Guardar la lista actualizada en UserDefaults
+            self.saveFavorites()
+            
+            // Recargar la celda actual para reflejar el cambio
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
         return cell
     }
-}
-
-
-
-
-    /*// MARK: - Navegar al detalle de la raza
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Obtén el objeto de la raza seleccionada
-        let selectedBreed = dogBreeds[indexPath.row]
-        
-        // Realiza el segue hacia el detalle
-        performSegue(withIdentifier: "showBreedDetails", sender: selectedBreed)
-    }
-
-    // MARK: - Preparar para el segue
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showBreedDetails" {
-            if let breedDetailVC = segue.destination as? BreedDetailViewController,
-               let selectedBreed = sender as? DogBreed {
-                breedDetailVC.breedId = selectedBreed.id // Envía el ID de la raza
+            if segue.identifier == "showFavorites" {
+                if let favoriteDogsVC = segue.destination as? FavoriteDogsTableViewController {
+                    favoriteDogsVC.favoriteDogIds = favoriteDogIds // Pasar los IDs favoritos
+                    favoriteDogsVC.dogsForAdoption = dogsForAdoption // Pasar los perros para que se puedan filtrar
+                }
             }
         }
-    }*/
-
+}

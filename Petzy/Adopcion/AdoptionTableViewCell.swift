@@ -13,16 +13,40 @@ class AdoptionTableViewCell: UITableViewCell {
     @IBOutlet weak var adoptionName: UILabel!
     @IBOutlet weak var adoptionUbic: UILabel!
     @IBOutlet weak var adoptionAge: UILabel!
+    @IBOutlet weak var favoriteButton: UIButton!
     
-    func configureCell(with dog: AdoptionAPI) {
+    var favoriteAction: (() -> Void)? // Closure para manejar el botón
+
+    func configureCell(with dog: AdoptionAPI, isFavorite: Bool) {
         adoptionName.text = dog.nombre
         adoptionAge.text = dog.edad
         adoptionUbic.text = dog.ubicacion
-        
+
         if let urlString = dog.image, let url = URL(string: urlString) {
             adoptionImage.loadImage(from: url)
         } else {
             adoptionImage.image = UIImage(named: "defaultImage")
         }
+
+        // Asegúrate de que el favoriteButton no sea nil
+        guard let favoriteButton = favoriteButton else {
+            return
+        }
+
+        // Cambiar la imagen del botón dependiendo de si es favorito o no
+        let buttonImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
+        favoriteButton.setImage(buttonImage, for: .normal)
+        
+        let cornerRadius: CGFloat = 10
+        adoptionImage.layer.cornerRadius = cornerRadius
+        adoptionImage.clipsToBounds = true
+        
     }
-}
+
+    
+        @IBAction func favoriteButtonTapped(_ sender: UIButton) {
+            favoriteAction?()
+        }
+    
+    
+    }

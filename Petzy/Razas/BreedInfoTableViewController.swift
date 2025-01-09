@@ -14,11 +14,14 @@ class BreedInfoTableViewController: UITableViewController {
         override func viewDidLoad() {
             super.viewDidLoad()
             
-            tableView.rowHeight = 100
+            tableView.rowHeight = 140
+            //tableView.separatorColor = .white
+        
             
             // Obtener las razas de perros
             fetchDogBreeds()
         }
+    
         
         func fetchDogBreeds() {
             guard let url = URL(string: "https://private-e41e00-dogbreed.apiary-mock.com/dogs/dog_list") else {
@@ -48,9 +51,10 @@ class BreedInfoTableViewController: UITableViewController {
             task.resume()
         }
         
-        override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return dogBreeds.count
-        }
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dogBreeds.count
+    }
+    
         
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DogBreedCell", for: indexPath) as! DogBreedTableViewCell

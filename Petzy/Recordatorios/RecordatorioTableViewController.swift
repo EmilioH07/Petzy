@@ -60,6 +60,22 @@ class RecordatorioTableViewController: UITableViewController, AddNewRecordatorio
         tableView.reloadData()
     }
 
+    // MARK: - Swipe to delete
+        
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Eliminar") { (action, indexPath) in
+            // Eliminar el recordatorio del array
+            self.recordatorios.remove(at: indexPath.row)
+                
+            // Guardar los cambios en UserDefaults
+            UserDefaults.standard.saveRecordatorios(self.recordatorios)
+                    
+            // Eliminar la fila de la tabla
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+            
+        return [deleteAction]
+    }
 
     // MARK: - TableView DataSource
 
