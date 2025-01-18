@@ -17,13 +17,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Distancia-3-Photoroom" translatesAutoresizingMaskIntoConstraints="NO" id="aDg-vS-L5j">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Distancia-3-Photoroom" translatesAutoresizingMaskIntoConstraints="NO" id="aDg-vS-L5j">
                                 <rect key="frame" x="-4" y="182" width="401" height="489"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aDg-vS-L5j" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="123" id="Xhb-AS-lWd"/>
+                            <constraint firstItem="aDg-vS-L5j" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="-4" id="YKp-iO-6fs"/>
+                            <constraint firstAttribute="trailing" secondItem="aDg-vS-L5j" secondAttribute="trailing" constant="-4" id="jLw-sy-qzl"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="aDg-vS-L5j" secondAttribute="bottom" constant="147" id="sjf-6d-tfe"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

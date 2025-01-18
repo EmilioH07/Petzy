@@ -16,6 +16,7 @@ class AdoptionTableViewCell: UITableViewCell {
     @IBOutlet weak var favoriteButton: UIButton!
     
     var favoriteAction: (() -> Void)? // Closure para manejar el botón
+    var contactAction: (() -> Void)?
 
     func configureCell(with dog: AdoptionAPI, isFavorite: Bool) {
         adoptionName.text = dog.nombre
@@ -44,9 +45,14 @@ class AdoptionTableViewCell: UITableViewCell {
     }
 
     
-        @IBAction func favoriteButtonTapped(_ sender: UIButton) {
-            favoriteAction?()
-        }
+    @IBAction func favoriteButtonTapped(_ sender: UIButton) {
+        favoriteAction?()
+    }
+    
+    @IBAction func celButtonTapped(_ sender: Any) {
+        contactAction?()
+    }
+    
     
     
     }

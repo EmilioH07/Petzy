@@ -13,4 +13,5 @@ struct AdoptionAPI: Decodable {
     let nombre: String?
     let ubicacion: String?
     let edad: String?
+    let cel: String?
 }
